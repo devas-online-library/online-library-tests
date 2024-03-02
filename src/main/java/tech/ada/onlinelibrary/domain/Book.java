@@ -13,10 +13,7 @@ import tech.ada.onlinelibrary.domain.enums.Genre;
 import java.time.Year;
 
 @Entity
-@Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Book {
 
     @Id
@@ -32,6 +29,15 @@ public class Book {
     private String publisher;
 
     private Year publicationYear;
+
+    public Book(Long id, String title, String author, Genre genre, String publisher, Year publicationYear) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.publisher = publisher;
+        this.publicationYear = publicationYear;
+    }
 
     public Long getId() {
         return id;
