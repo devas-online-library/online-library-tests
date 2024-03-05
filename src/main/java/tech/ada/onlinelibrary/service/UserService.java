@@ -26,6 +26,11 @@ public Optional<User> updateUser(User user) {
     return Optional.of(userRepository.save(user));
 }
 
+public User createUser(User user){
+    User newUser = userRepository.save(user);
+    return newUser;
+}
+
 public boolean authenticateUser(String username, String password) {
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (userOptional.isPresent()) {

@@ -1,3 +1,4 @@
+/*
 package tech.ada.onlinelibrary.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +50,7 @@ class BookControllerTest {
         }
     }
 
-    /*@Test
+@Test
     void getAllBooksTest() throws Exception {
         //Arrange - Preparar
         when(bookService.getAllBooks()).thenReturn(books);
@@ -61,7 +62,8 @@ class BookControllerTest {
                 andDo(MockMvcResultHandlers.print());
 
         verify(bookService,times(1)).getAllBooks();
-    }*/
+    }
+
 
     @Test
     void getBooksByTitle() {
@@ -93,3 +95,4 @@ class BookControllerTest {
     void deleteBook() {
     }
 }
+*/

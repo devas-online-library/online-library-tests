@@ -12,14 +12,22 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    public User(Long id, String username, String userPassword, String email) {
+        this.id = id;
+        this.username = username;
+        this.userPassword = userPassword;
+        this.email = email;
+    }
+
+    public User() {
+    }
 
     private String username;
     private String userPassword;

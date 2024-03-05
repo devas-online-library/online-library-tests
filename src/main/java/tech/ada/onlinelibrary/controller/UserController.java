@@ -43,9 +43,8 @@ public class UserController {
     }
     @PostMapping("/library/user/register")
         public ResponseEntity<User> createUser (@RequestBody CreateUserRequest userRequest){
-            User user = modelMapper.map(userRequest, User.class);
-            User newUser = userRepository.save(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+        User user = modelMapper.map(userRequest, User.class);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
         }
 
     @PutMapping("/library/user/update")
