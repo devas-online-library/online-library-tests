@@ -1,4 +1,3 @@
-/*
 package tech.ada.onlinelibrary.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,32 +8,38 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tech.ada.onlinelibrary.domain.Book;
 import tech.ada.onlinelibrary.domain.enums.Genre;
+import tech.ada.onlinelibrary.dto.CreateBookRequest;
 import tech.ada.onlinelibrary.service.BookService;
+
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import java.time.Year;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.mockito.Mockito;
 
 @ExtendWith(MockitoExtension.class)
 class BookControllerTest {
 
-    @Mock
-    private BookService bookService;
     private Book book;
     private List<Book> books;
 
+    private MockMvc mockMvc;
+
+    @Mock
+    private BookService bookService;
+
     @InjectMocks
     private BookController bookController;
-    private MockMvc mockMvc;
 
     @BeforeEach
     public void setup() {
@@ -55,18 +60,26 @@ class BookControllerTest {
         //Arrange - Preparar
         when(bookService.getAllBooks()).thenReturn(books);
 
-        PrintStream MockMvcResultHandlers;
-        mockMvc.perform(MockMvcRequestBuilders.get("/library/books").
-                        contentType(MediaType.APPLICATION_JSON).
-                        content(asJsonString(book))).
-                andDo(MockMvcResultHandlers.print());
+        mockMvc.perform(MockMvcRequestBuilders.get("/library/books")
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk());
 
         verify(bookService,times(1)).getAllBooks();
     }
 
 
     @Test
-    void getBooksByTitle() {
+    void getBooksByTitle() throws Exception {
+        //Arrange - Preparar
+        String title = "Clean Code: A Handbook of Agile Software Craftsmanship";
+        when(bookService.getBooksByTitle(title)).thenReturn(books);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/library/books")
+                        .param("title", title)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(bookService,times(1)).getBooksByTitle(title);
     }
 
     @Test
@@ -80,12 +93,19 @@ class BookControllerTest {
     @Test
     void createBook() throws Exception {
         //Arrange - Preparar
-        when(bookService.createBook(Mockito.any())).thenReturn(book);
+        CreateBookRequest bookRequest = new CreateBookRequest("Clean Code: A Handbook of Agile Software Craftsmanship", "Robert C. Martin", Genre.TECHNICAL, "Prentice Hall", Year.of(2008));
+
+        when(bookService.createBook(Mockito.any(CreateBookRequest.class))).thenReturn(book);
 
         //Act - Açao
-        mockMvc.perform(MockMvcRequestBuilders.post("/library/books").
-                contentType(MediaType.APPLICATION_JSON).
-                content(asJsonString(book))).andExpect(status().isCreated());
+        mockMvc.perform(MockMvcRequestBuilders.post("/library/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(bookRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("Clean Code: A Handbook of Agile Software Craftsmanship"))
+                .andExpect(jsonPath("$.author").value("Robert C. Martin"));
 
         //Assertion - Validacao
         verify(bookService, times(1)).createBook(Mockito.any());
@@ -95,4 +115,4 @@ class BookControllerTest {
     void deleteBook() {
     }
 }
-*/
+
