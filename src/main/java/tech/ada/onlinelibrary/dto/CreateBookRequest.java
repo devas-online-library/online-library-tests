@@ -17,7 +17,6 @@ public class CreateBookRequest {
     private String publisher;
 
     @JsonSerialize(using = YearSerializer.class)
-    @JsonDeserialize(using = YearDeserializer.class)
     private Year publicationYear;
 
     public CreateBookRequest(String title, String author, Genre genre, String publisher, Year publicationYear) {
