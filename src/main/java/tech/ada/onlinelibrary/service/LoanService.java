@@ -42,7 +42,7 @@ public class LoanService {
             if(realReturnDate != null){
                 LocalDate penaltyDate = realReturnDate.plusDays(15);
                 LocalDate actualDate = LocalDate.now();
-                if (realReturnDate.isAfter(scheduledReturnDate)&&(penaltyDate.isBefore(actualDate))) return false;
+                if (realReturnDate.isAfter(scheduledReturnDate)&&(actualDate.isBefore(penaltyDate))) return false;
             } else {
                 return false;
             }

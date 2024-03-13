@@ -1,6 +1,10 @@
 package tech.ada.onlinelibrary.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import tech.ada.onlinelibrary.domain.enums.Genre;
+import tech.ada.onlinelibrary.json.deserializer.YearDeserializer;
+import tech.ada.onlinelibrary.json.serializer.YearSerializer;
 
 import java.time.Year;
 import java.util.Objects;
@@ -11,6 +15,8 @@ public class CreateBookRequest {
     private String author;
     private Genre genre;
     private String publisher;
+
+    @JsonSerialize(using = YearSerializer.class)
     private Year publicationYear;
 
     public CreateBookRequest(String title, String author, Genre genre, String publisher, Year publicationYear) {
