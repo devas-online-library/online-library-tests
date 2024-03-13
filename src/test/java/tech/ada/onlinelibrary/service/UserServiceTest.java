@@ -86,20 +86,20 @@ class UserServiceTest {
     }
 
     @Test
-    public void testMustFailInAuthenticateUser() {
+    public void testAuthenticateUserIncorrectPassword() {
         String username = "testUser";
         String password = "password123";
-        User user = new User(1L, username, "wrongPassword", "test@example.com");
+        String wrongPassword = "wrongPassword";
+        User user = new User(1L, username, password, "test@example.com");
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
-        boolean result = userService.authenticateUser(username, password);
+        boolean result = userService.authenticateUser(username, wrongPassword);
 
-        assertTrue(result);
+        assertFalse(result);
 
         verify(userRepository, times(1)).findByUsername(username);
     }
-
 
     @Test
     public void testAuthenticateUserNotFound() {
