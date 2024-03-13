@@ -49,7 +49,8 @@ public class UserController {
 
     @PutMapping("/library/user/update")
     public ResponseEntity<User> updateUser(@RequestBody User user) {
-        return userService.updateUser(user)
+        Optional<User> updatedUser = userService.updateUser(user);
+        return updatedUser
                 .map(resp -> ResponseEntity.status(HttpStatus.OK).body(resp))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
