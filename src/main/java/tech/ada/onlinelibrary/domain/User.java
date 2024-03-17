@@ -1,6 +1,7 @@
 package tech.ada.onlinelibrary.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +13,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User {
 
@@ -26,8 +29,12 @@ public class User {
         this.email = email;
     }
 
-    public User() {
+    public User( String username, String userPassword, String email) {
+        this.username = username;
+        this.userPassword = userPassword;
+        this.email = email;
     }
+
 
     private String username;
     private String userPassword;
