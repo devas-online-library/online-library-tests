@@ -1,9 +1,7 @@
 package tech.ada.onlinelibrary.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import tech.ada.onlinelibrary.domain.enums.Genre;
-import tech.ada.onlinelibrary.json.deserializer.YearDeserializer;
 import tech.ada.onlinelibrary.json.serializer.YearSerializer;
 
 import java.time.Year;
