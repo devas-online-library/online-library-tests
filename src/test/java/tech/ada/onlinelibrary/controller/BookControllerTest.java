@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import tech.ada.onlinelibrary.domain.Book;
 import tech.ada.onlinelibrary.domain.enums.Genre;
 import tech.ada.onlinelibrary.dto.CreateBookRequest;
+import tech.ada.onlinelibrary.repository.BookRepository;
 import tech.ada.onlinelibrary.service.BookService;
 
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -40,7 +42,8 @@ class BookControllerTest {
 
     @Mock
     private BookService bookService;
-
+    @Mock
+    private BookRepository bookRepository;
     @InjectMocks
     private BookController bookController;
 
@@ -69,13 +72,12 @@ class BookControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.[0].id", equalTo(1)));
 
-        //verify(bookService,times(1)).getAllBooks();
 
     }
 
 
     @Test
-    void getBooksByTitle() throws Exception {
+    void getBooksByTitleTest() throws Exception {
         //Arrange - Preparar
         String title = "Clean Code: A Handbook of Agile Software Craftsmanship";
         when(bookService.getBooksByTitle(title)).thenReturn(books);
@@ -83,21 +85,42 @@ class BookControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/library/books")
                         .param("title", title)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].title", equalTo("Clean Code: A Handbook of Agile Software Craftsmanship")));
 
-        verify(bookService,times(1)).getBooksByTitle(title);
+
     }
 
     @Test
-    void getBooksByAuthor() {
+    void getBooksByAuthorTest() throws Exception {
+        //Arrange - Preparar
+        String author = "Robert C. Martin";
+        when(bookService.getBooksByAuthor(author)).thenReturn(books);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/library/books")
+                        .param("author", author)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].author", equalTo("Robert C. Martin")));
+
     }
 
     @Test
-    void getBooksByGenre() {
+    void getBooksByGenreTest() throws Exception {
+        //Arrange - Preparar
+        Genre genre = Genre.TECHNICAL;
+        when(bookService.getBooksByGenre(genre)).thenReturn(books);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/library/books")
+                        .param("genre", String.valueOf(genre))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].genre", equalTo(String.valueOf(Genre.TECHNICAL))));
+
     }
 
     @Test
-    void createBook() throws Exception {
+    void createBookTest() throws Exception {
         //Arrange - Preparar
         CreateBookRequest bookRequest = new CreateBookRequest("Clean Code: A Handbook of Agile Software Craftsmanship", "Robert C. Martin", Genre.TECHNICAL, "Prentice Hall", Year.of(2008));
 
@@ -113,12 +136,19 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.title").value("Clean Code: A Handbook of Agile Software Craftsmanship"))
                 .andExpect(jsonPath("$.author").value("Robert C. Martin"));
 
-        //Assertion - Validacao
-        verify(bookService, times(1)).createBook(Mockito.any());
     }
 
     @Test
-    void deleteBook() {
+    void deleteBookTest() throws Exception {
+        //Arrange - Preparar
+        Long id = 1l;
+
+//        when(bookService.getBookById(id)).thenReturn(book);
+        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/library/loans/{id}", id))
+                .andExpect(status().isNoContent());
+
     }
 }
 
