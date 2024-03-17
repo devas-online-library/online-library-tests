@@ -3,7 +3,6 @@ package tech.ada.onlinelibrary.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import tech.ada.onlinelibrary.domain.Loan;
-import tech.ada.onlinelibrary.domain.User;
 
 import java.util.List;
 

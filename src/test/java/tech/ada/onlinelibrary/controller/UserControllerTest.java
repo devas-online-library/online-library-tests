@@ -18,12 +18,9 @@ import tech.ada.onlinelibrary.domain.Book;
 import tech.ada.onlinelibrary.domain.Loan;
 import tech.ada.onlinelibrary.domain.User;
 import tech.ada.onlinelibrary.domain.enums.Genre;
+import tech.ada.onlinelibrary.dto.CreateUserRequest;
 import tech.ada.onlinelibrary.repository.UserRepository;
 import tech.ada.onlinelibrary.service.UserService;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.*;
-import tech.ada.onlinelibrary.dto.CreateUserRequest;
 
 import java.time.LocalDate;
 import java.time.Year;
@@ -31,9 +28,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)

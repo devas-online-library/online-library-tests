@@ -1,6 +1,5 @@
 package tech.ada.onlinelibrary.service;
 
-import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -123,7 +123,7 @@ class LoanServiceTest {
 
     @Test
     void createLoanTest() {
-        //Arrange - Preparar
+        //Arrange
         Long userId = 1l;
         Long bookId = 1l;
 
@@ -138,16 +138,17 @@ class LoanServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
 
-        //Act - Açao
+        //Act
         loanService.createLoan(loanRequest);
 
-        //Assertion - Validacao
+        //Assertion
         verify(loanRepository, times(1)).save(Mockito.any());
 
     }
 
     @Test
     void registerLoanReturnTest() {
+        // Arrange
         UpdateLoanRequest returnDateRequest = new UpdateLoanRequest(1l);
 
         Loan loan = new Loan();
@@ -156,15 +157,18 @@ class LoanServiceTest {
 
         when(loanRepository.findById(returnDateRequest.getLoanId())).thenReturn(Optional.of(loan));
 
+        // Act
         Optional<Loan> loanOpt = loanService.registerLoanReturn(returnDateRequest);
 
         loan.setRealReturnDate(LocalDate.now());
 
+        // Assert
         assertTrue(loan.getRealReturnDate() == loanOpt.get().getRealReturnDate());
     }
 
     @Test
     void renewLoanTest_WhenBookNotReturnedAndWithinScheduledReturnDate() {
+        // Arrange
         UpdateLoanRequest returnDateRequest = new UpdateLoanRequest(1l);
 
         Loan loan = new Loan();
@@ -174,10 +178,12 @@ class LoanServiceTest {
 
         when(loanRepository.findById(returnDateRequest.getLoanId())).thenReturn(Optional.of(loan));
 
+        // Act
         Optional<Loan> loanOpt = loanService.renewLoan(returnDateRequest);
 
         loan.setScheduledReturnDate(LocalDate.now().plusDays(7));
 
+        // Assert
         assertTrue(loan.getScheduledReturnDate() == loanOpt.get().getScheduledReturnDate());
     }
 
@@ -185,6 +191,7 @@ class LoanServiceTest {
     void renewLoanTest_KeepsScheduleReturnDateWhenBookIsReturned() {
         /* Keeps the scheduledReturnDate when book is already returned */
 
+        // Arrange
         UpdateLoanRequest returnDateRequest = new UpdateLoanRequest(1l);
 
         Loan loan = new Loan();
@@ -195,8 +202,10 @@ class LoanServiceTest {
 
         when(loanRepository.findById(returnDateRequest.getLoanId())).thenReturn(Optional.of(loan));
 
+        // Act
         Optional<Loan> loanOpt = loanService.renewLoan(returnDateRequest);
 
+        // Assert
         assertTrue(loan.getScheduledReturnDate() == loanOpt.get().getScheduledReturnDate());
 
     }
@@ -205,6 +214,7 @@ class LoanServiceTest {
     void renewLoanTest_KeepsScheduleReturnDateWhenLoanIsDelayed() {
         /* Keeps the scheduledReturnDate when loan is delayed */
 
+        // Arrange
         UpdateLoanRequest returnDateRequest = new UpdateLoanRequest(1l);
 
         Loan loan = new Loan();
@@ -214,8 +224,10 @@ class LoanServiceTest {
 
         when(loanRepository.findById(returnDateRequest.getLoanId())).thenReturn(Optional.of(loan));
 
+        // Act
         Optional<Loan> loanOpt = loanService.renewLoan(returnDateRequest);
 
+        // Assert
         assertTrue(loan.getScheduledReturnDate() == loanOpt.get().getScheduledReturnDate());
     }
 }

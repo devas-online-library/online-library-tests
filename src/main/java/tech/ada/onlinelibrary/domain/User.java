@@ -1,7 +1,6 @@
 package tech.ada.onlinelibrary.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,7 +33,6 @@ public class User {
         this.userPassword = userPassword;
         this.email = email;
     }
-
 
     private String username;
     private String userPassword;

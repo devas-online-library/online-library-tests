@@ -6,31 +6,27 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import tech.ada.onlinelibrary.advice.RestControllerAdvice;
+import tech.ada.onlinelibrary.advice.exception.BookNotFoundException;
 import tech.ada.onlinelibrary.domain.Book;
 import tech.ada.onlinelibrary.domain.enums.Genre;
 import tech.ada.onlinelibrary.dto.CreateBookRequest;
 import tech.ada.onlinelibrary.repository.BookRepository;
 import tech.ada.onlinelibrary.service.BookService;
 
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
-
-import org.mockito.Mockito;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class BookControllerTest {
@@ -51,7 +47,7 @@ class BookControllerTest {
     public void setup() {
         book = new Book(1l, "Clean Code: A Handbook of Agile Software Craftsmanship", "Robert C. Martin", Genre.TECHNICAL, "Prentice Hall", Year.of(2008));
         books.add(book);
-        mockMvc = MockMvcBuilders.standaloneSetup(bookController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(bookController).setControllerAdvice(RestControllerAdvice.class).build();
     }
 
     public static String asJsonString(final Object obj) {
@@ -64,9 +60,10 @@ class BookControllerTest {
 
 @Test
     void getAllBooksTest() throws Exception {
-        //Arrange - Preparar
+        //Arrange
         when(bookService.getAllBooks()).thenReturn(books);
 
+        // Act & Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/library/books")
                         .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk())
@@ -78,10 +75,11 @@ class BookControllerTest {
 
     @Test
     void getBooksByTitleTest() throws Exception {
-        //Arrange - Preparar
+        //Arrange
         String title = "Clean Code: A Handbook of Agile Software Craftsmanship";
         when(bookService.getBooksByTitle(title)).thenReturn(books);
 
+        // Act & Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/library/books")
                         .param("title", title)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -92,10 +90,11 @@ class BookControllerTest {
 
     @Test
     void getBooksByAuthorTest() throws Exception {
-        //Arrange - Preparar
+        // Arrange
         String author = "Robert C. Martin";
         when(bookService.getBooksByAuthor(author)).thenReturn(books);
 
+        // Act & Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/library/books")
                         .param("author", author)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -106,10 +105,11 @@ class BookControllerTest {
 
     @Test
     void getBooksByGenreTest() throws Exception {
-        //Arrange - Preparar
+        // Arrange
         Genre genre = Genre.TECHNICAL;
         when(bookService.getBooksByGenre(genre)).thenReturn(books);
 
+        // Act & Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/library/books")
                         .param("genre", String.valueOf(genre))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -120,12 +120,12 @@ class BookControllerTest {
 
     @Test
     void createBookTest() throws Exception {
-        //Arrange - Preparar
+        //Arrange
         CreateBookRequest bookRequest = new CreateBookRequest("Clean Code: A Handbook of Agile Software Craftsmanship", "Robert C. Martin", Genre.TECHNICAL, "Prentice Hall", Year.of(2008));
 
         when(bookService.createBook(Mockito.any(CreateBookRequest.class))).thenReturn(book);
 
-        //Act
+        // Act & Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/library/books")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(bookRequest)))
@@ -138,15 +138,28 @@ class BookControllerTest {
     }
 
     @Test
-    void deleteBookTest() throws Exception {
-        //Arrange - Preparar
+    void deleteBookTest_ValidId_NoContentReturned() throws Exception {
+        //Arrange
         Long id = 1l;
+        doNothing().when(bookService).deleteBook(id);
 
-//        when(bookService.getBookById(id)).thenReturn(book);
-        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/library/loans/{id}", id))
+        // Act & Assert
+        mockMvc.perform(MockMvcRequestBuilders.delete("/library/books/{id}", id))
                 .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    void deleteBookTest_InvalidId_BookNotFoundExceptionThrown() throws Exception {
+        //Arrange
+        Long id = 1l;
+        doThrow(new BookNotFoundException(id)).when(bookService).deleteBook(id);
+
+        // Act & Assert
+        mockMvc.perform(MockMvcRequestBuilders.delete("/library/books/{id}", id))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value("NOT_FOUND"))
+                .andExpect(jsonPath("$.message").value("Could not find book with id: 1"));
 
     }
 }

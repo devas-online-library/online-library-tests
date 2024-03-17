@@ -1,6 +1,5 @@
 package tech.ada.onlinelibrary.advice;
 
-import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 public class ErrorResponse {
