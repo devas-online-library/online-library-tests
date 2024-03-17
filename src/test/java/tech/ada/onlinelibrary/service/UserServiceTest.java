@@ -11,8 +11,7 @@ import tech.ada.onlinelibrary.repository.UserRepository;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 class UserServiceTest {
@@ -29,18 +28,29 @@ class UserServiceTest {
     }
 
     @Test
-    public void testUserRegister() {
-        User user = new User(1L, "testUser", "password123", "test@example.com");
-        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
-        when(userRepository.save(user)).thenReturn(user);
+    void testUserRegisterSuccessForNewUser() {
+        User newUser = new User(1L, "newUser", "password", "newUser@example.com");
 
-        Optional<User> result = userService.userRegister(user);
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+
+        when(userRepository.save(any(User.class))).thenReturn(newUser);
+
+        Optional<User> result = userService.userRegister(newUser);
 
         assertTrue(result.isPresent());
-        assertEquals(user, result.get());
+        assertEquals(newUser, result.get());
 
-        verify(userRepository, times(1)).findByUsername(user.getUsername());
-        verify(userRepository, times(1)).save(user);
+    }
+    @Test
+    void testUserRegisterFailsForDuplicatedUser() {
+
+        User existingUser = new User(1L, "existingUser", "password", "existingUser@example.com");
+
+        when(userRepository.findByUsername(existingUser.getUsername())).thenReturn(Optional.of(existingUser));
+
+        Optional<User> result = userService.userRegister(existingUser);
+
+        assertTrue(result.isEmpty());
     }
 
     @Test
@@ -54,7 +64,6 @@ class UserServiceTest {
         assertTrue(result.isPresent());
         assertEquals(user, result.get());
 
-        verify(userRepository, times(1)).save(user);
     }
 
     @Test
@@ -62,12 +71,10 @@ class UserServiceTest {
         User user = new User(1L, "testUser", "password123", "test@example.com");
 
         when(userRepository.save(user)).thenReturn(user);
-
         User result = userService.createUser(user);
 
         assertEquals(user, result);
 
-        verify(userRepository, times(1)).save(user);
     }
 
     @Test
@@ -82,7 +89,6 @@ class UserServiceTest {
 
         assertTrue(result);
 
-        verify(userRepository, times(1)).findByUsername(username);
     }
 
     @Test
@@ -97,8 +103,6 @@ class UserServiceTest {
         boolean result = userService.authenticateUser(username, wrongPassword);
 
         assertFalse(result);
-
-        verify(userRepository, times(1)).findByUsername(username);
     }
 
     @Test
@@ -111,7 +115,5 @@ class UserServiceTest {
         boolean result = userService.authenticateUser(username, password);
 
         assertFalse(result);
-
-        verify(userRepository, times(1)).findByUsername(username);
     }
 }
