@@ -88,7 +88,6 @@ class BookControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].title", equalTo("Clean Code: A Handbook of Agile Software Craftsmanship")));
 
-
     }
 
     @Test
