@@ -59,7 +59,7 @@ public class BookServiceTest {
     }
 
     @Test
-    void getAllBooksByTittleTest() throws Exception {
+    void getBooksByTittleTest() throws Exception {
         //Prepare
         String title = "Clean Code: A Handbook of Agile Software Craftsmanship";
 
@@ -72,7 +72,7 @@ public class BookServiceTest {
     }
 
     @Test
-    void getAllBooksByAuthorTest() throws Exception {
+    void getBooksByAuthorTest() throws Exception {
         //Prepare
         String author = "Robert C. Martin";
 
@@ -85,7 +85,7 @@ public class BookServiceTest {
     }
 
     @Test
-    void getAllBooksByGenreTest() throws Exception {
+    void getBooksByGenreTest() throws Exception {
         //Prepare
         Genre genre = Genre.TECHNICAL;
 
@@ -96,5 +96,6 @@ public class BookServiceTest {
         verify(bookRepository, times(1)).findByGenre(genre);
 
     }
+
 
 }
