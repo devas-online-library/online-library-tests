@@ -3,6 +3,7 @@ package tech.ada.onlinelibrary.controller;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.ada.onlinelibrary.advice.exception.UnauthorizedLoanException;
@@ -39,7 +40,7 @@ public class LoanController {
 
         if (isAuthorized) {
             loanService.createLoan(loanRequest);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
             throw new UnauthorizedLoanException(userId);
         }
@@ -85,7 +86,6 @@ public class LoanController {
             return ResponseEntity.noContent().build();
         } else  {
             return ResponseEntity.notFound().build();
-
         }
     }
 

@@ -1,5 +1,8 @@
 package tech.ada.onlinelibrary.dto;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class UpdateLoanRequest {
 
     private Long loanId;

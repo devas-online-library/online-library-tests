@@ -98,12 +98,12 @@ class BookControllerTest {
 
     @Test
     void createBook() throws Exception {
-        //Arrange - Preparar
+        //Arrange
         CreateBookRequest bookRequest = new CreateBookRequest("Clean Code: A Handbook of Agile Software Craftsmanship", "Robert C. Martin", Genre.TECHNICAL, "Prentice Hall", Year.of(2008));
 
         when(bookService.createBook(Mockito.any(CreateBookRequest.class))).thenReturn(book);
 
-        //Act - Açao
+        //Act
         mockMvc.perform(MockMvcRequestBuilders.post("/library/books")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(bookRequest)))
@@ -113,7 +113,7 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.title").value("Clean Code: A Handbook of Agile Software Craftsmanship"))
                 .andExpect(jsonPath("$.author").value("Robert C. Martin"));
 
-        //Assertion - Validacao
+        //Assert
         verify(bookService, times(1)).createBook(Mockito.any());
     }
 
