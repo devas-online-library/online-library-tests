@@ -1,11 +1,12 @@
 package tech.ada.onlinelibrary.dto;
-
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.Objects;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class CreateUserRequest {
     private String username;
     private String userPassword;
